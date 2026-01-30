@@ -3,6 +3,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import cors from "cors";
 import dotenv from "dotenv";
+import fs from "fs";
 
 import productRoutes from "./routes/productRoutes.js";
 import { sql } from "./config/db.js";
@@ -19,12 +20,42 @@ app.use(cors()); // handles cors errors
 app.use(helmet()); // security middleware
 app.use(morgan("dev")); // logs the requests
 
+// ensure logs directory exists for writing arcjet logs
+if (!fs.existsSync("logs")) {
+  fs.mkdirSync("logs", { recursive: true });
+}
+
 //apply arcjet rate-limit to all routes
 app.use(async (req, res, next) => {
   try {
-    const decision = await arcjetInstance.protect(req, {
+    // pass the request as the third argument so Arcjet can read request details
+    // (ip, headers, method, path) used by local rules like tokenBucket
+    const decision = await arcjetInstance.protect(undefined, {
       requested: 1, // specifies that each request consumes 1 token
-    });
+    }, req);
+
+    // Log decisions for debugging rate-limit behavior
+    try {
+      const short = {
+        time: new Date().toISOString(),
+        ip: req.ip || req.headers["x-forwarded-for"] || "unknown",
+        method: req.method,
+        path: req.path,
+        denied: decision.isDenied(),
+        ttl: decision.ttl ?? null,
+        results: Array.isArray(decision.results) ? decision.results.map((r) => ({
+          id: r.ruleId || "",
+          conclusion: r.conclusion || r._conclusion || "",
+          reason: r.reason && r.reason.constructor && r.reason.constructor.name ? r.reason.constructor.name : String(r.reason),
+        })) : [],
+      };
+      const line = JSON.stringify(short) + "\n";
+      fs.appendFileSync("logs/arcjet.log", line);
+      // also console.log for quick terminal visibility
+      console.log("[Arcjet]", short.time, short.ip, short.method, short.path, "denied=", short.denied, "ttl=", short.ttl);
+    } catch (logErr) {
+      console.error("Failed to write arcjet log:", logErr);
+    }
 
     if (decision.isDenied()) {
       if (decision.reason.isRateLimit()) {
