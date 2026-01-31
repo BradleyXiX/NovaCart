@@ -4,6 +4,7 @@ import { useProductStore } from "../store/useProductStore";
 
 function ProductCard({ product }) {
   const { deleteProduct } = useProductStore();
+  
   return (
     <div className="transition-shadow duration-300 shadow-xl card bg-base-100 hover:shadow-2xl">
       {/* PRODUCT IMAGE */}
