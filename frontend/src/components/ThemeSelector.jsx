@@ -15,7 +15,7 @@ function ThemeSelector() {
 
       <div
         tabIndex={0}
-        className="w-56 p-1 mt-2 border shadow-2xl dropdown-content bg-base-200 backdrop-blur-lg rounded-2xl border-base-content/10 "
+        className="w-56 p-1 mt-2 overflow-y-auto border shadow-2xl dropdown-content bg-base-200 backdrop-blur-lg rounded-2xl border-base-content/10 max-h-60 custom-scrollbar"
       >
         {THEMES.map((themeOption) => (
           <button
