@@ -1,6 +1,7 @@
 import { Link, useResolvedPath } from "react-router-dom";
-import { ShoppingBagIcon, ShoppingCartIcon } from "lucide-react";
+import { ShoppingBagIcon, ShoppingCartIcon, UserCircleIcon } from "lucide-react";
 import ThemeSelector from "./ThemeSelector";
+import LoginModal from "./LoginModal";
 
 const Navbar = () => {
   const { pathname } = useResolvedPath();
@@ -31,14 +32,21 @@ const Navbar = () => {
                   <ShoppingBagIcon className="size-5" />
                   <span className="badge badge-sm badge-primary indicator-item">8
                   </span>
-                </div>
+                </div>   
               </div>
             )}
-            
+              <button 
+                className="p-2 transition-colors rounded-full hover:bg-base-200 cursor-pointer"
+                onClick={() => document.getElementById("login_modal").showModal()}
+              >
+                <UserCircleIcon className="size-6"/>
+              </button>
           </div>
 
         </div>
       </div>
+
+      <LoginModal />
     </div>
   );
 };
