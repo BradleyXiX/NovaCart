@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useProductStore } from "../store/useProductStore";
+import { useAuthStore } from "../store/useAuthStore";
 import { useEffect } from "react";
 import { ArrowLeftIcon, SaveIcon, Trash2Icon } from "lucide-react";
 
@@ -14,12 +15,20 @@ function ProductPage() {
     updateProduct,
     deleteProduct,
   } = useProductStore();
+  const { isAdmin } = useAuthStore();
   const navigate = useNavigate();
   const { id } = useParams();
 
   useEffect(() => {
     fetchProduct(id);
   }, [fetchProduct, id]);
+
+  // Redirect non-admins to the details page
+  useEffect(() => {
+    if (!isAdmin && currentProduct) {
+      navigate(`/product-details/${id}`);
+    }
+  }, [isAdmin, currentProduct, id, navigate]);
 
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this product?")) {
@@ -40,6 +49,16 @@ function ProductPage() {
     return (
       <div className="container px-4 py-8 mx-auto">
         <div className="alert alert-error">{error}</div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="container px-4 py-8 mx-auto">
+        <div className="alert alert-warning">
+          You don't have permission to access this page. Please contact an administrator.
+        </div>
       </div>
     );
   }
@@ -114,6 +133,20 @@ function ProductPage() {
                   className="w-full input input-bordered"
                   value={formData.image}
                   onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                />
+              </div>
+
+              {/* PRODUCT DESCRIPTION */}
+              <div className="form-control">
+                <label className="label">
+                  <span className="text-base font-medium label-text">Description</span>
+                </label>
+                <textarea
+                  placeholder="Enter product description"
+                  className="w-full textarea textarea-bordered"
+                  rows="4"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 />
               </div>
 

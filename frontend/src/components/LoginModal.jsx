@@ -7,7 +7,7 @@ function LoginModal() {
   const { authFormData, setAuthFormData, signIn, signUp, loading } =
     useAuthStore();
 
-  
+
 
   return (
     <dialog id="login_modal" className="modal">

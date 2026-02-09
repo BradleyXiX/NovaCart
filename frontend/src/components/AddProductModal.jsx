@@ -1,4 +1,4 @@
-import { DollarSignIcon, ImageIcon, Package2Icon, PlusCircleIcon } from "lucide-react";
+import { DollarSignIcon, ImageIcon, Package2Icon, PlusCircleIcon, FileTextIcon } from "lucide-react";
 import { useProductStore } from "../store/useProductStore";
 
 function AddProductModal() {
@@ -6,7 +6,7 @@ function AddProductModal() {
 
   return (
     <dialog id="add_product_modal" className="modal">
-      <div className="modal-box">
+      <div className="max-w-2xl modal-box">
         {/* CLOSE BUTTON */}
         <form method="dialog">
           <button className="absolute btn btn-sm btn-circle btn-ghost right-2 top-2">X</button>
@@ -72,6 +72,25 @@ function AddProductModal() {
                   className="w-full py-3 pl-10 transition-colors duration-200 input input-bordered focus:input-primary"
                   value={formData.image}
                   onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                />
+              </div>
+            </div>
+
+            {/* PRODUCT DESCRIPTION */}
+            <div className="form-control">
+              <label className="label">
+                <span className="text-base font-medium label-text">Description</span>
+              </label>
+              <div className="relative">
+                <div className="absolute top-0 left-0 flex items-center pt-3 pl-3 pointer-events-none text-base-content/50">
+                  <FileTextIcon className="size-5" />
+                </div>
+                <textarea
+                  placeholder="Enter product description"
+                  className="w-full py-3 pl-10 transition-colors duration-200 textarea textarea-bordered focus:textarea-primary"
+                  rows="4"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 />
               </div>
             </div>

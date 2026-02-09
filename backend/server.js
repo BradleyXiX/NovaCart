@@ -87,6 +87,19 @@ app.use(async (req, res, next) => {
 
 app.use("/api/products", productRoutes);
 
+// Test endpoint for admin user (for testing only)
+app.post("/api/auth/test-admin", (req, res) => {
+  res.json({
+    success: true,
+    user: { 
+      id: 1, 
+      name: "Test Admin", 
+      email: "admin@test.com", 
+      isAdmin: true 
+    }
+  });
+});
+
 async function initDB() {
   try {
     await sql`
@@ -94,6 +107,7 @@ async function initDB() {
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(255) NOT NULL,
                 image VARCHAR(255) NOT NULL,
+                description TEXT,
                 price DECIMAL(10, 2) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );

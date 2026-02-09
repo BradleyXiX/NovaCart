@@ -1,9 +1,11 @@
 import { EditIcon, Trash2Icon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useProductStore } from "../store/useProductStore";
+import { useAuthStore } from "../store/useAuthStore";
 
 function ProductCard({ product }) {
   const { deleteProduct } = useProductStore();
+  const { isAdmin } = useAuthStore();
   
   return (
     <div className="transition-shadow duration-300 shadow-xl card bg-base-100 hover:shadow-2xl">
@@ -23,16 +25,22 @@ function ProductCard({ product }) {
 
         {/* CARD ACTIONS */}
         <div className="justify-end mt-4 card-actions">
-          <Link to={`/product/${product.id}`} className="btn btn-sm btn-info btn-outline">
+          <Link 
+            to={isAdmin ? `/product/${product.id}` : `/product-details/${product.id}`} 
+            className="btn btn-sm btn-info btn-outline"
+          >
             <EditIcon className="size-4" />
+            {isAdmin ? "Edit" : "View"}
           </Link>
 
-          <button
-            className="btn btn-sm btn-error btn-outline"
-            onClick={() => deleteProduct(product.id)}
-          >
-            <Trash2Icon className="size-4" />
-          </button>
+          {isAdmin && (
+            <button
+              className="btn btn-sm btn-error btn-outline"
+              onClick={() => deleteProduct(product.id)}
+            >
+              <Trash2Icon className="size-4" />
+            </button>
+          )}
         </div>
       </div>
     </div>

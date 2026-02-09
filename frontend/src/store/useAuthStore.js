@@ -11,6 +11,7 @@ export const useAuthStore = create((set, get) => ({
   loading: false,
   error: null,
   isAuthenticated: false,
+  isAdmin: false,
 
   // form state
   authFormData: {
@@ -38,6 +39,7 @@ export const useAuthStore = create((set, get) => ({
       set({
         user: response.data.user,
         isAuthenticated: true,
+        isAdmin: response.data.user?.isAdmin || false,
         error: null,
       });
 
@@ -68,6 +70,7 @@ export const useAuthStore = create((set, get) => ({
 
       set({
         user: response.data.user,
+        isAdmin: response.data.user?.isAdmin || false,
         isAuthenticated: true,
         error: null,
       });
@@ -89,10 +92,34 @@ export const useAuthStore = create((set, get) => ({
   signOut: () => {
     set({
       user: null,
+      isAdmin: false,
       isAuthenticated: false,
       error: null,
       authFormData: { email: "", password: "", name: "" },
     });
     toast.success("Signed out successfully!");
   },
+
+  testAdminLogin: async () => {
+    set({ loading: true });
+    try {
+      const response = await axios.post(`${BASE_URL}/api/auth/test-admin`);
+      set({
+        user: response.data.user,
+        isAuthenticated: true,
+        isAdmin: response.data.user?.isAdmin || false,
+        error: null,
+      });
+      toast.success("Logged in as test admin!");
+    } catch (error) {
+      console.log("Error in testAdminLogin function", error);
+      toast.error("Failed to login as test admin");
+    } finally {
+      set({ loading: false });
+    }
+  },
 }));
+
+{import.meta.env.MODE === "development" && (
+  <button>Test Admin</button>
+)}

@@ -1,10 +1,12 @@
 import { Link, useResolvedPath } from "react-router-dom";
-import { ShoppingBagIcon, ShoppingCartIcon, UserCircleIcon } from "lucide-react";
+import { ShoppingBagIcon, ShoppingCartIcon, UserCircleIcon, LogInIcon } from "lucide-react";
 import ThemeSelector from "./ThemeSelector";
 import LoginModal from "./LoginModal";
+import { useAuthStore } from "../store/useAuthStore";
 
 const Navbar = () => {
   const { pathname } = useResolvedPath();
+  const { testAdminLogin } = useAuthStore();
   const isHomePage = pathname === "/"
   return (
     <div className="sticky top-0 z-50 border-b bg-base-100/80 backdrop-blur-lg border-base-content/10">
@@ -35,12 +37,23 @@ const Navbar = () => {
                 </div>   
               </div>
             )}
-              <button 
-                className="p-2 transition-colors rounded-full hover:bg-base-200 cursor-pointer"
-                onClick={() => document.getElementById("login_modal").showModal()}
-              >
-                <UserCircleIcon className="size-6"/>
-              </button>
+
+            {/* TEST ADMIN BUTTON - REMOVE IN PRODUCTION */}
+            <button 
+              className="btn btn-xs btn-ghost gap-2"
+              onClick={testAdminLogin}
+              title="Test admin login (for development only)"
+            >
+              <LogInIcon className="size-4" />
+              Test Admin
+            </button>
+
+            <button 
+              className="p-2 transition-colors rounded-full hover:bg-base-200 cursor-pointer"
+              onClick={() => document.getElementById("login_modal").showModal()}
+            >
+              <UserCircleIcon className="size-6"/>
+            </button>
           </div>
 
         </div>
