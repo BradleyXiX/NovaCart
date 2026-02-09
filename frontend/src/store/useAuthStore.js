@@ -5,13 +5,47 @@ import toast from "react-hot-toast";
 const BASE_URL =
   import.meta.env.MODE === "development" ? "http://localhost:3000" : "";
 
-export const useAuthStore = create((set, get) => ({
-  // auth state
+const STORAGE_KEY = "novacart-auth";
+
+// Helper function to load auth from localStorage
+const loadAuthFromStorage = () => {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return parsed;
+    }
+  } catch (error) {
+    console.log("Error loading auth from storage", error);
+  }
+  return null;
+};
+
+// Helper function to save auth to localStorage
+const saveAuthToStorage = (authState) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(authState));
+  } catch (error) {
+    console.log("Error saving auth to storage", error);
+  }
+};
+
+// Load initial state from localStorage
+const initialAuthState = loadAuthFromStorage() || {
   user: null,
   loading: false,
   error: null,
   isAuthenticated: false,
   isAdmin: false,
+};
+
+export const useAuthStore = create((set, get) => ({
+  // auth state
+  user: initialAuthState.user,
+  loading: false,
+  error: null,
+  isAuthenticated: initialAuthState.isAuthenticated,
+  isAdmin: initialAuthState.isAdmin,
 
   // form state
   authFormData: {
@@ -36,12 +70,15 @@ export const useAuthStore = create((set, get) => ({
         password: authFormData.password,
       });
 
-      set({
+      const authState = {
         user: response.data.user,
         isAuthenticated: true,
         isAdmin: response.data.user?.isAdmin || false,
         error: null,
-      });
+      };
+
+      set(authState);
+      saveAuthToStorage(authState);
 
       get().resetAuthForm();
       toast.success("Account created successfully!");
@@ -68,12 +105,15 @@ export const useAuthStore = create((set, get) => ({
         password: authFormData.password,
       });
 
-      set({
+      const authState = {
         user: response.data.user,
-        isAdmin: response.data.user?.isAdmin || false,
         isAuthenticated: true,
+        isAdmin: response.data.user?.isAdmin || false,
         error: null,
-      });
+      };
+
+      set(authState);
+      saveAuthToStorage(authState);
 
       get().resetAuthForm();
       toast.success("Signed in successfully!");
@@ -92,11 +132,12 @@ export const useAuthStore = create((set, get) => ({
   signOut: () => {
     set({
       user: null,
-      isAdmin: false,
       isAuthenticated: false,
+      isAdmin: false,
       error: null,
       authFormData: { email: "", password: "", name: "" },
     });
+    localStorage.removeItem(STORAGE_KEY);
     toast.success("Signed out successfully!");
   },
 
@@ -104,12 +145,14 @@ export const useAuthStore = create((set, get) => ({
     set({ loading: true });
     try {
       const response = await axios.post(`${BASE_URL}/api/auth/test-admin`);
-      set({
+      const authState = {
         user: response.data.user,
         isAuthenticated: true,
         isAdmin: response.data.user?.isAdmin || false,
         error: null,
-      });
+      };
+      set(authState);
+      saveAuthToStorage(authState);
       toast.success("Logged in as test admin!");
     } catch (error) {
       console.log("Error in testAdminLogin function", error);
@@ -119,7 +162,3 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 }));
-
-{import.meta.env.MODE === "development" && (
-  <button>Test Admin</button>
-)}
