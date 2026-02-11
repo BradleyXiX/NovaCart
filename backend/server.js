@@ -103,7 +103,8 @@ app.post("/api/auth/test-admin", (req, res) => {
 });
 
 async function initDB() {
-  try{// Create users table
+  try{
+    // Create users table
     await sql`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
@@ -125,8 +126,7 @@ async function initDB() {
           price DECIMAL(10, 2) NOT NULL,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
-        );
-        `;
+    `;
     console.log("Database initialized");
   } catch (error) {
     console.log("Error in the initDB", error);
