@@ -9,7 +9,7 @@ WORKDIR /home/node/app
 COPY --chown=node:node package*.json ./
 
 # 4. Install production dependencies
-RUN npm ci --only=production
+RUN npm install --omit=dev
 
 # 5. Copy the rest of the backend source code
 COPY --chown=node:node . .

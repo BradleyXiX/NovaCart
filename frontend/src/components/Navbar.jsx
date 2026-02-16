@@ -64,10 +64,10 @@ const Navbar = () => {
                     <li><a className="badge badge-primary">Admin</a></li>
                   )}
                   <li>
-                    <a onClick={signOut} className="text-error">
+                    <button onClick={signOut} className="text-error">
                       <LogOutIcon className="size-4" />
                       Sign Out
-                    </a>
+                    </button>
                   </li>
                 </ul>
               </div>

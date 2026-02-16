@@ -1,4 +1,4 @@
-# Stage 1: Build the React application
+# Stage 1: Build
 FROM node:20-alpine as build
 WORKDIR /app
 COPY package*.json ./
@@ -6,10 +6,11 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Stage 2: Serve the build using Nginx (Production standard)
+# Stage 2: Serve
 FROM nginx:stable-alpine
-# Vite builds to 'dist' by default
+# Copy the custom nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy the built React app
 COPY --from=build /app/dist /usr/share/nginx/html
-# Copy a simple nginx config if you have custom routing (otherwise default is fine)
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
