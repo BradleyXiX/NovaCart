@@ -1,28 +1,36 @@
 version: '3.8'
 
 services:
-  db:
-    image: postgres:15-alpine
-    container_name: pulse_db
-    restart: always
-    environment:
-      POSTGRES_USER: your_user
-      POSTGRES_PASSWORD: your_password
-      POSTGRES_DB: pulse_ecommerce
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
+  # --- Backend Service (Express + Node) ---
   backend:
-    build: ./backend
-    container_name: pulse_backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: novacart_backend
     ports:
       - "5000:5000"
-    environment:
-      DATABASE_URL: postgres://your_user:your_password@db:5432/pulse_ecommerce
-    depends_on:
-      - db
+    # This links the .env file to the container securely
+    env_file:
+      - ./backend/.env
+    restart: always
+    networks:
+      - novacart_network
 
-volumes:
-  pgdata:
+  # --- Frontend Service (React + Nginx) ---
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: novacart_frontend
+    ports:
+      - "80:80"
+    # Ensures frontend only starts once backend is ready
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - novacart_network
+
+networks:
+  novacart_network:
+    driver: bridge
