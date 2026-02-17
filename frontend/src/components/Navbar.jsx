@@ -6,7 +6,7 @@ import { useAuthStore } from "../store/useAuthStore";
 
 const Navbar = () => {
   const { pathname } = useResolvedPath();
-  const { testAdminLogin, isAuthenticated, user, signOut } = useAuthStore();
+  const { isAuthenticated, user, signOut } = useAuthStore();
   const isHomePage = pathname === "/"
   return (
     <div className="sticky top-0 z-50 border-b bg-base-100/80 backdrop-blur-lg border-base-content/10">
@@ -38,17 +38,7 @@ const Navbar = () => {
               </div>
             )}
 
-            {/* TEST ADMIN BUTTON - REMOVE IN PRODUCTION */}
-            {import.meta.env.MODE === "development" && (
-              <button 
-                className="btn btn-xs btn-ghost gap-2"
-                onClick={testAdminLogin}
-                title="Test admin login (for development only)"
-              >
-                <LogInIcon className="size-4" />
-                Test Admin
-              </button>
-            )}
+
 
             {isAuthenticated ? (
               <div className="dropdown dropdown-end">
